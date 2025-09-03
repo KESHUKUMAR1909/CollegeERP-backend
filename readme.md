@@ -41,7 +41,7 @@ The ERP ID is hashed and stored in the database while the plain ERP ID is emaile
 └── README.md
 
 yaml
-Copy code
+
 
 ---
 
@@ -64,36 +64,28 @@ Copy code
    cd college-erp
 Install dependencies:
 
-bash
-Copy code
+
 npm install
 Setup .env file:
 
 env
-Copy code
+
 PORT=3000
 MONGO_URI=mongodb://localhost:27017/college-erp
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-password
 Run server:
 
-bash
-Copy code
+
 npm start
 Server should be running at:
 
-arduino
-Copy code
+
 http://localhost:3000
 📌 API Endpoints
 Register College
 http
-Copy code
-POST /register
-Request Body (JSON):
 
-json
-Copy code
 {
   "name": "National Institute of Technology",
   "email": "keshukumar1909@gmail.com",
@@ -106,10 +98,7 @@ Copy code
   "websiteUrl": "https://www.nit-example.edu",
   "contactNumber": "+91-9876543210"
 }
-Response (JSON):
 
-json
-Copy code
 {
   "success": true,
   "message": "College registered successfully",
@@ -129,8 +118,7 @@ Copy code
 ⚡ Note: The plain ERP ID will be emailed to the provided college email.
 
 📧 Email Example
-kotlin
-Copy code
+
 Subject: Your College ERP Registration
 Body:
 Dear National Institute of Technology,
@@ -145,20 +133,6 @@ Student-course enrollment management.
 
 Admin dashboard for managing multiple colleges.
 
-yaml
-Copy code
-
----
-
-Do you want me to also **add usage instructions for `short-unique-id` and `nodemailer` setup** inside this README, so new devs won’t get stuck?
-
-
-
-
-
-
-
-Ask ChatGPT
 
 
 
