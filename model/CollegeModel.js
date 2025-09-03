@@ -6,7 +6,10 @@ const collegeSchema = new mongoose.Schema({
         required: [true, "Please Provide College name"],
         trim: true
     },
-
+    email:{
+        type:String ,
+        required:true,
+    },
     collegeId: {
         type: String,
         required: [true, "Please Provide College Id"],

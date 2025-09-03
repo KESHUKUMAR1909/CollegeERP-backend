@@ -1,29 +1,31 @@
-// importing the required packages
+// Importing required packages
 const express = require('express');
-const mongoose = require('mongoose');
+require('dotenv').config();
 
 // Importing internal files
 const dbConnect = require('./utils/dbConnect');
-
-require('dotenv').config();
-
-
+const collegeRouter = require('./routes/collegeRoute');
 
 // Setting up express app
 const app = express();
 
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// getting the Env variables
-const PORT = process.env.PORT;
+// Registering routes
+app.use('/college', collegeRouter);
 
 // Ping Request
-app.get('/' , (req , res)=>{
+app.get('/', (req, res) => {
     res.send("Hello this is the starting of express");
 });
 
+// Getting the Env variables
+const PORT = process.env.PORT || 5000;
 
-app.listen(PORT , async (res , req)=>{
-
-    dbConnect();
-    console.log(`Server Started on port ${PORT}`)
+// Start server
+app.listen(PORT, async () => {
+    await dbConnect();
+    console.log(`✅ Server started on port ${PORT}`);
 });
