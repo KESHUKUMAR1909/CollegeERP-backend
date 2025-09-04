@@ -1,7 +1,9 @@
 const collegeRepository = require('../repository/collegeRepo');
 const ShortUniqueId = require('short-unique-id');
 const { hashFunc } = require('../utils/bcryptFun'); // your bcrypt wrapper
+require('dotenv').config();
 const { sendMail } = require('../utils/sendMail');    // your email sender
+const jwt = require('jsonwebtoken');
 
 const registerCollegeService = async (details) => {
     try {
@@ -31,6 +33,55 @@ const registerCollegeService = async (details) => {
     }
 };
 
+
+
+const registerStudentService = async (details) => {
+    try {
+        const newStudent = await collegeRepository.registerStudent(details);
+
+        return newStudent;
+    } catch (error) {
+        console.error("Error in registerCollegeService:", error.message);
+        throw error;
+    }
+}
+
+
+const loginCollegeService = async (details) => {
+    try {
+        const secretKey = process.env.secret;
+
+        // Only put required fields inside the token payload
+        const payload = {
+            uniqueErpId: details.uniqueErpId,
+            collegeId: details.collegeId,
+            name: details.name,
+            email: details.email
+        };
+
+        // Generate JWT (expires in 1h)
+        const token = jwt.sign(payload, secretKey, { expiresIn: "1h" });
+        console.log(token);
+
+        // Hash the token before saving in DB
+        const hashedToken = await hashFunc(token);
+        details.token = hashedToken;
+        details.tokenExpireAt = new Date(Date.now() +24* 60 * 60 * 1000); 
+
+        // Save college login session
+        const newCollege = await collegeRepository.loginCollege(details);
+        
+
+        return {
+            token , newCollege
+        }
+    } catch (error) {
+        console.error("Error in loginCollegeService:", error.message);
+        throw error;
+    }
+};
 module.exports = {
-    registerCollegeService
+    registerCollegeService,
+    registerStudentService,
+    loginCollegeService
 };

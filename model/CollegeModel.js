@@ -6,9 +6,9 @@ const collegeSchema = new mongoose.Schema({
         required: [true, "Please Provide College name"],
         trim: true
     },
-    email:{
-        type:String ,
-        required:true,
+    email: {
+        type: String,
+        required: true,
     },
     collegeId: {
         type: String,
@@ -19,13 +19,14 @@ const collegeSchema = new mongoose.Schema({
     courses: [
         {
             courseName: { type: String, required: true },
-            timePeriod: { type: String, required: true }
+            timePeriod: { type: String, required: true },
+            courseId: { type: String, required: true, unique: true }
         }
     ],
 
     uniqueErpId: {
         type: String,
-        unique: true   
+        unique: true
     },
 
     websiteUrl: {
@@ -34,7 +35,17 @@ const collegeSchema = new mongoose.Schema({
 
     contactNumber: {
         type: String
+    },
+    token: {
+        type: String,
+        default: null
+    },
+    tokenExpireAt: {
+        type: Date,
+        default: () => new Date(Date.now() + 24 * 60 * 60 * 1000) // 1 day
     }
+
+
 }, { timestamps: true });
 
 const CollegeModel = mongoose.model('College', collegeSchema);

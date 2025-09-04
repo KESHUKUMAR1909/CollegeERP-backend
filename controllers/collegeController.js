@@ -1,6 +1,7 @@
 // Importing the Service Layer of College
 const collegeService = require('../services/collegeService');
 
+
 const registerCollegeController = async (req, res) => {
     try {
         const details = req.body;
@@ -31,6 +32,69 @@ const registerCollegeController = async (req, res) => {
     }
 };
 
+
+
+// Register Student
+const registerStudentController = async (req, res) => {
+    try {
+        const details = req.body;
+        console.log("Recieved details of the student are ", details);
+
+        const student = await collegeService.registerStudentService(details);
+        if (!student) {
+            return res.status(400).json({
+                success: false,
+                message: "Student could not be registered. Please try again later."
+            });
+        }
+
+        return res.status(201).json({
+            success: true,
+            message: "College registered successfully",
+            data: student
+        });
+
+    } catch (error) {
+        console.error("Error in registerCollegeController:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Internal Server Error"
+        });
+    }
+}
+
+const loginCollegeController = async (req, res) => {
+    try {
+        const details = req.body;
+        const collegeObject = await collegeService.loginCollegeService(details);
+        if (!collegeObject.newCollege) {
+            return res.status(400).json({
+                success: false,
+                message: "Student could not be registered. Please try again later."
+            });
+        }
+
+        return res.status(201).json({
+            success: true,
+            message: "College registered successfully",
+            data:collegeObject
+        });
+
+    } catch {
+
+        console.error("Error in registerCollegeController:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Internal Server Error"
+        });
+    }
+}
+
+
 module.exports = {
-    registerCollegeController
+    registerCollegeController,
+    registerStudentController,
+    loginCollegeController
 };
