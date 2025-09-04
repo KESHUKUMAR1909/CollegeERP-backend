@@ -1,7 +1,6 @@
 # 🎓 College ERP System (Node.js + Express + MongoDB)
 
-A simple **ERP system for Colleges** where colleges can register themselves, generate a unique ERP ID, and manage their details.  
-The ERP ID is hashed and stored in the database while the plain ERP ID is emailed to the college.
+A simple **ERP system for Colleges** where colleges can register themselves, generate a unique ERP ID, login with authentication, and register students under their database.
 
 ---
 
@@ -16,6 +15,8 @@ The ERP ID is hashed and stored in the database while the plain ERP ID is emaile
 - Auto-generate a **6-digit unique ERP ID** using `short-unique-id`.
 - Securely hash ERP ID with `bcryptjs` before saving to DB.
 - Send plain ERP ID via **email (Nodemailer)** to the registered college.
+- College **Login & Auth** using `jsonwebtoken` + `uniqueErpId`.
+- Colleges can **register students** under their profile (protected route).
 - Follows **MVC + Service + Repository** architecture.
 - MongoDB schema validation.
 
@@ -24,14 +25,20 @@ The ERP ID is hashed and stored in the database while the plain ERP ID is emaile
 ## 📂 Project Structure
 ├── controllers
 │ └── collegeController.js # Handles request/response
+│ └── studentController.js # Handles student registration
 ├── model
 │ └── CollegeModel.js # Mongoose schema for College
+│ └── StudentModel.js # Mongoose schema for Student
 ├── repositories
-│ └── collegeRepository.js # DB operations (CRUD)
+│ └── collegeRepository.js # College DB operations
+│ └── studentRepository.js # Student DB operations
 ├── routes
-│ └── collegeRoute.js # Express routes
+│ └── collegeRoute.js # College routes (register, login)
+│ └── studentRoute.js # Student routes (register)
 ├── services
-│ └── collegeService.js # Business logic (generate ERP ID, hash, mail)
+│ └── collegeService.js # College business logic
+├── middleware
+│ └── collegeAuthMiddleware.js # Auth verification
 ├── utils
 │ ├── dbConnect.js # MongoDB connection
 │ ├── hash.js # Hashing utility (bcryptjs)
@@ -40,16 +47,14 @@ The ERP ID is hashed and stored in the database while the plain ERP ID is emaile
 ├── index.js # Main server file
 └── README.md
 
-yaml
 
-
----
 
 ## 🛠️ Tech Stack
 - **Node.js** (Backend runtime)
 - **Express.js** (Server framework)
 - **MongoDB + Mongoose** (Database + ODM)
 - **bcryptjs** (Hashing)
+- **jsonwebtoken** (Auth)
 - **short-unique-id** (Unique ERP ID generation)
 - **nodemailer** (Send ERP ID via email)
 - **dotenv** (Environment configuration)
@@ -76,15 +81,19 @@ EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-password
 Run server:
 
-
 npm start
 Server should be running at:
 
 
 http://localhost:3000
 📌 API Endpoints
-Register College
+🔹 Register College
 http
+
+
+POST /api/college/register
+Request Body:
+
 
 {
   "name": "National Institute of Technology",
@@ -98,6 +107,7 @@ http
   "websiteUrl": "https://www.nit-example.edu",
   "contactNumber": "+91-9876543210"
 }
+✅ Response:
 
 {
   "success": true,
@@ -117,23 +127,76 @@ http
 }
 ⚡ Note: The plain ERP ID will be emailed to the provided college email.
 
-📧 Email Example
+🔹 College Login
 
+POST /api/college/login
+Request Body:
+
+
+{
+  "collegeId": "NIT001",
+  "uniqueErpId": "LAYt4U"
+}
+✅ Response:
+
+
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+}
+🔹 Register Student (Authenticated)
+http
+
+POST /api/student/register
+Request Body:
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
+  "college": "68b9dc4372793763cf105b17",
+  "collegeErpId": "LAYt4U",
+  "name": "Amit Kumar",
+  "studentId": "STU12345",
+  "courseId": "CSE101",
+  "totalFee": 100000,
+  "paidFee": 45000,
+  "totalAttendance": 180,
+  "currentAttendance": 150
+}
+✅ Response:
+
+
+{
+  "success": true,
+  "message": "Student registered successfully",
+  "data": {
+    "_id": "6500...7a",
+    "name": "Amit Kumar",
+    "studentId": "STU12345",
+    "courseId": "CSE101",
+    "college": "68b9dc4372793763cf105b17",
+    "paidFee": 45000,
+    "totalFee": 100000,
+    "currentAttendance": 150,
+    "totalAttendance": 180
+  }
+}
+📧 Email Example
 Subject: Your College ERP Registration
 Body:
+
+
 Dear National Institute of Technology,
-Your ERP ID is: A1B2C3
+
+Your ERP ID is: LAYt4U
 Please keep this safe for future login.
 🚀 Next Steps
-Add student registration & login.
+Student login using Student ID + College ERP ID.
 
-College login using ERP ID + password.
+Attendance and fee management module.
 
-Student-course enrollment management.
+College dashboard with student insights.
 
 Admin dashboard for managing multiple colleges.
-
-
-
 
 
