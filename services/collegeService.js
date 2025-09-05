@@ -8,10 +8,7 @@ const jwt = require('jsonwebtoken');
 const registerCollegeService = async (details) => {
     try {
         // 1. Generate unique 6-digit ERP ID
-
-        const uid = new ShortUniqueId({ length: 6 });  // create instance
-
-        // Generate ID like this:
+        const uid = new ShortUniqueId({ length: 6 });
         const plainErpId = uid.rnd();
 
         // 2. Send plain ID via email
@@ -33,19 +30,15 @@ const registerCollegeService = async (details) => {
     }
 };
 
-
-
 const registerStudentService = async (details) => {
     try {
         const newStudent = await collegeRepository.registerStudent(details);
-
         return newStudent;
     } catch (error) {
-        console.error("Error in registerCollegeService:", error.message);
+        console.error("Error in registerStudentService:", error.message);
         throw error;
     }
-}
-
+};
 
 const loginCollegeService = async (details) => {
     try {
@@ -61,27 +54,36 @@ const loginCollegeService = async (details) => {
 
         // Generate JWT (expires in 1h)
         const token = jwt.sign(payload, secretKey, { expiresIn: "1h" });
-        console.log(token);
+        console.log("Generated JWT for college:", token);
 
         // Hash the token before saving in DB
         const hashedToken = await hashFunc(token);
         details.token = hashedToken;
-        details.tokenExpireAt = new Date(Date.now() +24* 60 * 60 * 1000); 
+        details.tokenExpireAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         // Save college login session
         const newCollege = await collegeRepository.loginCollege(details);
-        
 
-        return {
-            token , newCollege
-        }
+        return { token, newCollege };
     } catch (error) {
         console.error("Error in loginCollegeService:", error.message);
         throw error;
     }
 };
+
+const registerfacultyService = async (details) => {
+    try {
+        const newFaculty = await collegeRepository.registerFaculty(details);
+        return newFaculty;
+    } catch (error) {
+        console.error("Error in registerFacultyService:", error.message);
+        throw error;
+    }
+};
+
 module.exports = {
     registerCollegeService,
     registerStudentService,
-    loginCollegeService
+    loginCollegeService,
+    registerfacultyService
 };
